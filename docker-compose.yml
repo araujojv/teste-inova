@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  cleaner_service:
+    build:
+      context: ./data_clean
+    ports:
+      - "5001:5001"
+    networks:
+      - app_network
+
+  database_service:
+    build:
+      context: ./data_save
+    ports:
+      - "5002:5002"
+    networks:
+      - app_network
+    depends_on:
+      - cleaner_service
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
